@@ -11,6 +11,7 @@ Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('p
 Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patient.destroy');
 Route::get('/cekrm', [PatientController::class, 'showCheckRMForm'])->name('patient.cekrm');
 
+Route::get('antrian/{noantrian}', [PatientController::class, 'showAntrian'])->name('patient.antrian');
 
 
 Route::get('/admin/setting', function () {

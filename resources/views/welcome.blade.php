@@ -97,7 +97,7 @@
                     });
                 </script>
                 <div class="mb-3">
-                    <label for="tanggalKunjungan" class="form-label"><i class="far fa-calendar-check me-2"></i>Pilih Tanggal Kunjungan:</label>
+                    <label for="tanggalKunjungan" class="form-label"><i class="far fa-calendar-check me-2"></i>Pilih Tanggal Kunjungan (3 hari ke depan):</label>
                     <input type="date" class="form-control form-control-lg" id="tanggalKunjungan">
                 </div>
                 <div class="text-center">
@@ -109,7 +109,7 @@
                         const tanggalKunjungan = document.getElementById('tanggalKunjungan').value;
                         
                         if (!nomorRM || !tanggalKunjungan) {
-                            alert('Mohon isi Nomor Rekam Medis dan Tanggal Kunjungan.');
+                            alert('isi nen no rekam medis e suu!!');
                             return;
                         }
 
