@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('patients', function (Blueprint $table) {
-            $table->id();                                    // ID unik (Primary Key)
-            $table->string('nik')->unique();                 // Nomor Induk Kependudukan (unik)
-            $table->string('name');                          // Nama Lengkap
-            $table->date('birth_date');                      // Tanggal Lahir
-            $table->enum('gender', ['Laki-laki', 'Perempuan']); // Jenis Kelamin
-            $table->string('mother_name');                   // Nama Ibu Kandung
-            $table->string('address');                       // Alamat
-            $table->string('region')->nullable();            // Wilayah (opsional)
-            $table->string('phone_number');                  // Nomor Handphone
-            $table->timestamps();                            // created_at & updated_at
+            $table->id();                                        // ID unik (Primary Key)
+            $table->string('nik')->unique();                     // Nomor Induk Kependudukan (unik)
+            $table->string('patient_number')->unique();          // Nomor Rekam Medis (RM) pasien
+            $table->string('name');                              // Nama Lengkap
+            $table->date('birth_date');                          // Tanggal Lahir
+            $table->enum('gender', ['Laki-laki', 'Perempuan']);  // Jenis Kelamin
+            $table->string('mother_name');                       // Nama Ibu Kandung
+            $table->string('address');                           // Alamat
+            $table->string('region')->nullable();                // Wilayah (opsional)
+            $table->string('phone_number');                      // Nomor Handphone
+            $table->timestamps();                                // created_at & updated_at
         });
     }
 

@@ -9,19 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('adminlokets', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function up()
     {
-        Schema::dropIfExists('adminlokets');
+        Schema::create('lokets', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_loket');
+            $table->string('role')->default('loket');
+            $table->timestamps();
+        });
     }
+    
+    public function down()
+    {
+        Schema::dropIfExists('lokets');
+    }
+    
 };

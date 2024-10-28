@@ -12,6 +12,7 @@ class Patient extends Model
     // Daftar kolom yang bisa diisi secara massal (mass assignable)
     protected $fillable = [
         'nik',
+        'patient_number',
         'name',
         'birth_date',
         'gender',

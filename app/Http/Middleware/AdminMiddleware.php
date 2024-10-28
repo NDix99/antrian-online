@@ -22,6 +22,6 @@ class AdminMiddleware
         }
 
         // Jika bukan admin, kembalikan respons forbidden atau redirect ke halaman lain
-        return redirect('setting'); // Kamu bisa mengganti '/' dengan route lain yang diinginkan
+        return redirect('/')->with('error', 'Akses ditolak. Anda bukan admin.'); // Kamu bisa mengganti '/' dengan route lain yang diinginkan
     }
 }
