@@ -28,10 +28,13 @@ class UserSeeder extends Seeder
 
         // Membuat user loket
         $loket = User::create([
-            'name' => 'Loket',
+            'name' => 'loket',
             'email' => 'loket@gmail.com',
             'password' => Hash::make('123456789'), // Password default
             'role' => 'loket',
         ]);
+        
+        // Assign role loket ke user
+        $loket->assignRole('loket');
     }
 }

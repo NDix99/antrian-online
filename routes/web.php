@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
-
+use App\Http\Middleware\Role;
 
 Route::get('/patients/create', [PatientController::class, 'create'])->name('patient.create');
 Route::post('/patients', [PatientController::class, 'store'])->name('patient.store');
@@ -15,42 +15,41 @@ Route::get('/cekrm', [PatientController::class, 'showCheckRMForm'])->name('patie
 Route::get('antrian/{noantrian}', [PatientController::class, 'showAntrian'])->name('patient.antrian');
 
 
+Route::get('/', function () {
+    return view('welcome');
+});
 
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    
+    'role:admin'
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('admin.dashboard');
     })->name('dashboard');
+    
+    Route::get('/admin/setting', function () {
+        return view('admin.setting');
+    })->name('admin.setting');
+
+    Route::get('/admin/user', function () {
+        return view('admin.user');
+    })->name('admin.user');
+
+    Route::get('/admin/dataantrian', function () {
+        return view('admin.dataantrian');
+    })->name('admin.dataantrian');
 });
 
-
-Route::get('/admin/setting', function () {
-    return view('admin.setting');
-})->name('admin.setting')->middleware(['auth', 'admin']);
-
-Route::get('/admin/user', function () {
-    return view('admin.user');
-})->name('admin.user')->middleware(['auth', 'admin']);
-
-Route::get('/admin/dataantrian', function () {
-    return view('admin.dataantrian');
-})->name('admin.setting')->middleware(['auth', 'admin']);
-
-Route::get('/', function () {
-    return view('welcome');
-});
-    Route::middleware([
-    'auth:sanctum', 
+Route::middleware([
+    'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    'loket'
+    'role:loket'
 ])->group(function () {
-    Route::get('/loket/index', function () {
-        return view('loket.index');
-    })->name('loket.index');
+    Route::get('/loket', function () {
+        return view('loket.home');
+    })->name('loket.home');
 });
