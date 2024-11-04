@@ -23,8 +23,6 @@ class UserSeeder extends Seeder
             'role' => 'admin',
         ]);
         
-        // Assign role admin ke user
-        $admin->assignRole('admin');
 
         // Membuat user loket
         $loket = User::create([
@@ -33,8 +31,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123456789'), // Password default
             'role' => 'loket',
         ]);
-        
-        // Assign role loket ke user
-        $loket->assignRole('loket');
+       
     }
 }

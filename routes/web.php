@@ -48,12 +48,12 @@ Route::middleware([
 });
 
 Route::middleware([
-    'auth:sanctum', 
-    config('jetstream.auth_session'),
+    'auth:sanctum',
+    config('jetstream.auth_session'), 
     'verified',
     'role:loket'
 ])->group(function () {
-    Route::get('/loket', function () {
-        return view('loket.index'); 
-    })->name('loket.index');
+    Route::get('/home', function () {
+        return view('loket.home');
+    })->name('loket.home');
 });

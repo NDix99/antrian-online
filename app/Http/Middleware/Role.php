@@ -15,12 +15,22 @@ class Role
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
+        if ($request->user()->role == $role) {
+            return $next($request);
+        }
 
-      $roles = explode('|', $role);
-      if (!$request->user() || !in_array($request->user()->role, $roles)) {
-        abort(403, 'Unauthorized action.');
-      }
 
-      return $next($request);
+        $userRole = $request->user()->role;
+        if (json_decode($userRole)) {
+            $userRole = json_decode($userRole, true);
+            if ($userRole['role'] == $role) {
+                return $next($request);
+            }
+        }
+
+
+
+        // Tindakan jika pengguna tidak memiliki peran yang diperlukan
+        abort(403, 'Unauthorized');
     }
 }
