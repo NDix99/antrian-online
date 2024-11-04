@@ -73,20 +73,57 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-4"><i class="fas fa-search me-2"></i>Cek Nomor Rekam Medis</h3>
-                    <form>
+                    <form id="checkRMForm" onsubmit="checkRM(event)">
+                        @csrf
                         <div class="mb-4">
                             <label for="nik" class="form-label"><i class="fas fa-id-card me-2"></i>Ketikkan NIK Anda</label>
-                            <input type="text" class="form-control form-control-lg" id="nik" placeholder="Masukkan 16 digit NIK Anda">
+                            <input type="text" class="form-control form-control-lg" id="nik" name="nik" placeholder="Masukkan 16 digit NIK Anda" required>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-check-circle me-2"></i>Cek Nomor RM</button>
                         </div>
                     </form>
+
+                    <!-- Tambahkan div untuk menampilkan hasil -->
+                    <div id="result" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Hasil Pencarian:</h5>
+                            <p id="rmResult"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    function checkRM(event) {
+        event.preventDefault();
+        
+        $.ajax({
+            url: '{{ route("check.rm") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                nik: $('#nik').val()
+            },
+            success: function(response) {
+                if(response.success) {
+                    $('#rmResult').html(`NIK: ${response.patient.nik}<br>Nama: ${response.patient.nama}<br>Nomor RM: ${response.patient.no_rm}`);
+                    $('#result').show();
+                } else {
+                    $('#rmResult').html(response.message);
+                    $('#result').show();
+                }
+            },
+            error: function() {
+                $('#rmResult').html('Terjadi kesalahan. Silakan coba lagi.');
+                $('#result').show();
+            }
+        });
+    }
+    </script>
 </body>
 </html>

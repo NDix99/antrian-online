@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Patient extends Model
 {
-    use HasFactory;
+    protected $table = 'patients';
 
     // Daftar kolom yang bisa diisi secara massal (mass assignable)
     protected $fillable = [
         'nik',
-        'patient_number',
+        'no_rm',
         'name',
         'birth_date',
         'gender',

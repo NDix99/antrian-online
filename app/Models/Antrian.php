@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Antrian extends Model
 {
     use HasFactory;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
+    protected $table = 'antrians'; // Nama tabel di database, jika tidak sesuai dengan konvensi Laravel
+    
     protected $fillable = [
-        'nomor_rm',
-        'nama', 
-        'waktu_pelayanan',
-        'tanggal_kunjungan'
+        'no_rm',
+        'tanggal_kunjungan',
+        'status',
     ];
 }

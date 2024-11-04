@@ -6,6 +6,7 @@
     <title>RSUD Caruban Antrian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             background-color: #f0f8ff;
@@ -72,75 +73,66 @@
         <!-- Form Section -->
         <div class="card p-4 mb-4 bg-white">
             <h3 class="card-title text-center mb-4"><i class="fas fa-ticket-alt me-2"></i>Ambil Nomor Antrian</h3>
-            <form>
+            <form id="antrianForm">
+                @csrf
                 <div class="mb-3">
-                    <label for="nomorRM" class="form-label"><i class="fas fa-id-card me-2"></i>Nomor Rekam Medis:</label>
-                    <input type="text" class="form-control form-control-lg" id="nomorRM" name="nomorRM" placeholder="Isikan No. RM Anda">
+                    <label for="no_rm" class="form-label"><i class="fas fa-id-card me-2"></i>Nomor Rekam Medis:</label>
+                    <input type="text" class="form-control form-control-lg" id="no_rm" name="no_rm" placeholder="Isikan No. RM Anda">
                     <div id="nomorRMFeedback" class="invalid-feedback" style="display: none;">
                         Nomor Rekam Medis belum terdaftar.
                     </div>
                 </div>
-                <script>
-                    document.getElementById('nomorRM').addEventListener('blur', function() {
-                        // Simulate database check (replace with actual AJAX call to your backend)
-                        setTimeout(() => {
-                            const isValid = Math.random() < 0.5; // 50% chance of being valid
-                            const feedbackElement = document.getElementById('nomorRMFeedback');
-                            if (!isValid) {
-                                this.classList.add('is-invalid');
-                                feedbackElement.style.display = 'block';
-                            } else {
-                                this.classList.remove('is-invalid');
-                                feedbackElement.style.display = 'none';
-                            }
-                        }, 500);
-                    });
-                </script>
                 <div class="mb-3">
-                    <label for="tanggalKunjungan" class="form-label"><i class="far fa-calendar-check me-2"></i>Pilih Tanggal Kunjungan (3 hari ke depan):</label>
-                    <input type="date" class="form-control form-control-lg" id="tanggalKunjungan">
+                    <label for="tanggal_kunjungan" class="form-label"><i class="far fa-calendar-check me-2"></i>Pilih Tanggal Kunjungan (3 hari ke depan):</label>
+                    <input type="date" class="form-control form-control-lg" id="tanggal_kunjungan" name="tanggal_kunjungan">
                 </div>
                 <div class="text-center">
-                    <button type="button" id="ambilAntrianBtn" class="btn btn-success btn-lg mt-3"><i class="fas fa-check-circle me-2"></i>Ambil Antrian</button>
+                    <button type="submit" class="btn btn-success btn-lg mt-3"><i class="fas fa-check-circle me-2"></i>Ambil Antrian</button>\
                 </div>
-                <script>
-                    document.getElementById('ambilAntrianBtn').addEventListener('click', function() {
-                        const nomorRM = document.getElementById('nomorRM').value;
-                        const tanggalKunjungan = document.getElementById('tanggalKunjungan').value;
-                        
-                        if (!nomorRM || !tanggalKunjungan) {
-                            alert('isi nen no rekam medis e suu!!');
-                            return;
-                        }
+            </form>
 
-                        // Kirim permintaan ke server untuk mengambil nomor antrian
-                        fetch('/ambil-antrian', {
+            <script>
+                document.getElementById('antrianForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const nomorRM = document.getElementById('no_rm').value.trim();
+                    const tanggalKunjungan = document.getElementById('tanggal_kunjungan').value;
+                    const nomorRMFeedback = document.getElementById('nomorRMFeedback');
+                    
+                    if (!nomorRM || !tanggalKunjungan) {
+                        alert('Mohon isi nomor rekam medis dan tanggal kunjungan');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/antrian', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                             },
                             body: JSON.stringify({
-                                nomorRM: nomorRM,
-                                tanggalKunjungan: tanggalKunjungan
+                                no_rm: nomorRM,
+                                tanggal_kunjungan: tanggalKunjungan
                             })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(`Nomor antrian Anda: ${data.nomorAntrian}`);
-                                // Tambahkan logika lain jika diperlukan, seperti memperbarui tampilan
-                            } else {
-                                alert(data.message || 'Terjadi kesalahan saat mengambil nomor antrian.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan. Silakan coba lagi nanti.');
                         });
-                    });
-                </script>
-            </form>
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            alert('Nomor antrian Anda berhasil dibuat!');
+                            window.location.href = `/antrian/${data.noantrian}`;
+                        } else {
+                            nomorRMFeedback.style.display = 'block';
+                            document.getElementById('no_rm').classList.add('is-invalid');
+                            alert(data.message || 'Nomor rekam medis tidak ditemukan atau terjadi kesalahan.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan sistem. Silakan coba lagi nanti.');
+                    }
+                });
+            </script>
         </div>
         <!-- End of Form -->
 

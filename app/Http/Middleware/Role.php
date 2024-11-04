@@ -15,6 +15,7 @@ class Role
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
+
       $roles = explode('|', $role);
       if (!$request->user() || !in_array($request->user()->role, $roles)) {
         abort(403, 'Unauthorized action.');

@@ -27,9 +27,6 @@ class Role
                 return $next($request);
             }
         }
-
-
-
         // Tindakan jika pengguna tidak memiliki peran yang diperlukan
         abort(403, 'Unauthorized');
     }
