@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('antrians', function (Blueprint $table) {
-            $table->string('nik');                                                  // Primary key
-            $table->string('no_antrian', 300);                                      // Nomor antrian
-            $table->string('no_rm', 10);                                            // Nomor rekam medis
-            $table->date('tanggal_kunjungan');                                      // Tanggal kunjungan
-            $table->enum('status', ['waiting', 'called', 'completed']);             // Status antrian
-            $table->unsignedBigInteger('loket_id');                                 // Foreign key untuk loket
-            $table->timestamps('created_at');                                       // waktu dibuat
-            $table->timestamps('updated_at');                                       // waktu di perbarui
+            $table->bigIncrements('no_antrian');                                         // Auto-increment primary key
+        //  $table->string('nik')->nullable()->default(null);
+            $table->string('no_rm', 10);                                                
+            $table->date('tanggal_kunjungan')->default(now());                          
+            $table->enum('status', ['menunggu', 'dipanggil', 'selesai'])->default('menunggu');
+       //   $table->unsignedBigInteger('loket_id');                                     
+            $table->timestamps();
         });
     }
 

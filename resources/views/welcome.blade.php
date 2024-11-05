@@ -73,7 +73,7 @@
         <!-- Form Section -->
         <div class="card p-4 mb-4 bg-white">
             <h3 class="card-title text-center mb-4"><i class="fas fa-ticket-alt me-2"></i>Ambil Nomor Antrian</h3>
-            <form id="antrianForm">
+            <form id="formAntrian" action="{{ route('antrian.ambil') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label for="no_rm" class="form-label"><i class="fas fa-id-card me-2"></i>Nomor Rekam Medis:</label>
@@ -86,52 +86,69 @@
                     <label for="tanggal_kunjungan" class="form-label"><i class="far fa-calendar-check me-2"></i>Pilih Tanggal Kunjungan (3 hari ke depan):</label>
                     <input type="date" class="form-control form-control-lg" id="tanggal_kunjungan" name="tanggal_kunjungan">
                 </div>
+                <script>
+                    // Set batasan tanggal kunjungan
+                    const tanggalKunjunganInput = document.getElementById('tanggal_kunjungan');
+                    
+                    // Dapatkan tanggal hari ini
+                    const today = new Date();
+                    
+                    // Set tanggal minimum (hari ini)
+                    const minDate = today.toISOString().split('T')[0];
+                    tanggalKunjunganInput.setAttribute('min', minDate);
+                    
+                    // Set tanggal maksimum (3 hari ke depan)
+                    const maxDate = new Date();
+                    maxDate.setDate(today.getDate() + 3);
+                    tanggalKunjunganInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+                    
+                    // Set default value ke hari ini
+                    tanggalKunjunganInput.value = minDate;
+                    
+                    // Tambahkan event listener untuk validasi
+                    tanggalKunjunganInput.addEventListener('change', function() {
+                        const selectedDate = new Date(this.value);
+                        if (selectedDate < today || selectedDate > maxDate) {
+                            alert('Pilih tanggal antara hari ini dan 3 hari ke depan');
+                            this.value = minDate;
+                        }
+                    });
+                </script>
                 <div class="text-center">
                     <button type="submit" class="btn btn-success btn-lg mt-3"><i class="fas fa-check-circle me-2"></i>Ambil Antrian</button>\
                 </div>
             </form>
-
+           
             <script>
-                document.getElementById('antrianForm').addEventListener('submit', async function(e) {
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('formAntrian').addEventListener('submit', function(e) {
                     e.preventDefault();
                     
-                    const nomorRM = document.getElementById('no_rm').value.trim();
-                    const tanggalKunjungan = document.getElementById('tanggal_kunjungan').value;
-                    const nomorRMFeedback = document.getElementById('nomorRMFeedback');
+                    let formData = new FormData(this);
                     
-                    if (!nomorRM || !tanggalKunjungan) {
-                        alert('Mohon isi nomor rekam medis dan tanggal kunjungan');
-                        return;
-                    }
-                    
-                    try {
-                        const response = await fetch('/antrian', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                            },
-                            body: JSON.stringify({
-                                no_rm: nomorRM,
-                                tanggal_kunjungan: tanggalKunjungan
-                            })
-                        });
-
-                        const data = await response.json();
-
+                    fetch('{{ route("antrian.ambil") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(Object.fromEntries(formData))
+                    })
+                    .then(response => response.json())
+                    .then(data => {
                         if (data.success) {
-                            alert('Nomor antrian Anda berhasil dibuat!');
-                            window.location.href = `/antrian/${data.noantrian}`;
+                            alert('Berhasil mengambil nomor antrian: ' + data.data.no_antrian);
                         } else {
-                            nomorRMFeedback.style.display = 'block';
-                            document.getElementById('no_rm').classList.add('is-invalid');
-                            alert(data.message || 'Nomor rekam medis tidak ditemukan atau terjadi kesalahan.');
+                            alert('Gagal: ' + data.message);
                         }
-                    } catch (error) {
+                    })
+                    .catch(error => {
                         console.error('Error:', error);
-                        alert('Terjadi kesalahan sistem. Silakan coba lagi nanti.');
-                    }
+                        alert('Terjadi kesalahan');
+                    });
                 });
+            });
             </script>
         </div>
         <!-- End of Form -->

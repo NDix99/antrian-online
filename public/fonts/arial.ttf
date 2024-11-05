@@ -1,0 +1,1 @@
+wget https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf -O public/fonts/arial.ttf

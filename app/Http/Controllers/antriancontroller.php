@@ -2,53 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Antrian;
+use App\Services\TicketImageService;
+use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
 class AntrianController extends Controller
 {
-    /**
-     * Menampilkan view untuk role loket.
-     *
-     * @return \Illuminate\View\View
-     */
- 
-    public function store(Request $request)
+    protected $ticketService;
+
+    public function __construct(TicketImageService $ticketService)
     {
-        // Validasi data yang diterima
+        $this->ticketService = $ticketService;
+    }
+
+    public function ambil(Request $request)
+    {
         $request->validate([
-            'no_rm' => 'required|string|max:255',
-            'tanggal_kunjungan' => 'required|date',
+            'no_rm' => 'required|string|max:10',
         ]);
 
-        // Simpan data ke tabel antrian
-        Antrian::create([
+        $lastAntrian = Antrian::whereDate('created_at', now())->latest('no_antrian')->first();
+        $nomorAntrian = $lastAntrian ? $lastAntrian->no_antrian + 1 : 1;
+
+        $antrian = Antrian::create([
             'no_rm' => $request->no_rm,
-            'tanggal_kunjungan' => $request->tanggal_kunjungan,
-            'status' => 'Menunggu', // Tambahkan field lainnya sesuai kebutuhan
+            'no_antrian' => $nomorAntrian,
+            'status' => 'menunggu',
+            'tanggal_kunjungan' => now()->toDateString(),
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
 
-        // Redirect atau tampilkan pesan sukses
-        return redirect()->back()->with('success', 'Nomor antrian berhasil diambil.');
+        $ticketImageUrl = $this->ticketService->generateTicketImage($antrian);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Nomor antrian berhasil dibuat',
+            'data' => $antrian,
+            'ticket_image' => $ticketImageUrl
+        ]);
+    }
+
+    public function panggilAntrian($no_antrian)
+    {
+        $antrian = Antrian::findOrFail($no_antrian);
+        $antrian->status = 'called';
+        $antrian->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Antrian dipanggil',
+            'data' => $antrian
+        ]);
+    }
+
+    public function selesaiAntrian($no_antrian)
+    {
+        $antrian = Antrian::findOrFail($no_antrian);
+        $antrian->status = 'completed';
+        $antrian->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Antrian selesai',
+            'data' => $antrian
+        ]);
     }
 
     public function getData()
     {
-        // Sesuaikan nama tabel dan kolom dengan database Anda
-        $antrian = Antrian::select([
-            'nomor_antrian',
-            'no_rm',
-            'nama_pasien',
-            'tanggal_kunjungan'
-        ]);
-        
-        return DataTables::of($antrian)
-            ->editColumn('tanggal_kunjungan', function($antrian) {
-                // Sesuaikan format tanggal jika diperlukan
-                return \Carbon\Carbon::parse($antrian->tanggal_kunjungan)
-                    ->format('d F Y');
-            })
+        return DataTables::of(Antrian::query())
+            ->addIndexColumn()
             ->make(true);
     }
 }

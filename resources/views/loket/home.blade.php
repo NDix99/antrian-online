@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/id.min.js"></script>
 </head>
 <body class="bg-gray-100">  
     <div class="bg-green-700 text-white p-4">
@@ -103,20 +105,24 @@
 
     <script>
         $(document).ready(function() {
-            $('#DataTables').DataTable({
+            $('#queueTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('antrian.data') }}",
                 columns: [
-                    // Sesuaikan 'data' dengan nama kolom di database Anda
                     {data: 'nomor_antrian', name: 'nomor_antrian'},
                     {data: 'no_rm', name: 'no_rm'},
                     {data: 'nama_pasien', name: 'nama_pasien'},
-                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan'}
+                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan', 
+                        render: function(data) {
+                            return moment(data).format('DD MMMM YYYY HH:mm:ss');
+                        }
+                    }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
-                }
+                },
+                order: [[0, 'desc']]
             });
         });
     </script>

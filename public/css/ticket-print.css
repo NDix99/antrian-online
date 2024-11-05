@@ -1,0 +1,14 @@
+@media print {
+    .actions {
+        display: none;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .ticket-result {
+        padding: 0;
+    }
+}

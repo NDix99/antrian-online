@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Antrian extends Model
 {
-    use HasFactory;
-
-    protected $table = 'antrians'; // Nama tabel di database, jika tidak sesuai dengan konvensi Laravel
-    
+    protected $table = 'antrians';
+    protected $primaryKey = 'no_antrian';
     protected $fillable = [
         'no_rm',
-        'tanggal_kunjungan',
+        'no_antrian',
         'status',
+        'tanggal_kunjungan',
+        'created_at',
+        'updated_at'
     ];
 }

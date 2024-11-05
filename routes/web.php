@@ -17,14 +17,17 @@ Route::post('/cek-rm', [PatientController::class, 'checkRM'])->name('cekrm.check
 Route::post('/cek-rm/check', [PatientController::class, 'checkRM'])->name('check.rm');
 Route::get('antrian/{noantrian}', [PatientController::class, 'showAntrian'])->name('patient.antrian');
 Route::post('/antrians', [AntrianController::class, 'store'])->name('antrian.store');
-Route::get('/antrian/data', [AntrianController::class, 'getData'])->name('antrian.data');
+Route::post('/antrian', [AntrianController::class, 'store']);
 
+
+// Route untuk memproses pengambilan nomor antrian
+Route::post('/antrian/ambil', [AntrianController::class, 'ambil'])->name('antrian.ambil');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-
+//route admin
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -48,6 +51,9 @@ Route::middleware([
     })->name('admin.dataantrian');
 });
 
+
+
+//route loket
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'), 
@@ -57,4 +63,11 @@ Route::middleware([
     Route::get('/home', function () {
         return view('loket.home');
     })->name('loket.home');
+});
+Route::get('/antrian/data', [AntrianController::class, 'getData'])->name('antrian.data');
+
+Route::group(['prefix' => 'antrian'], function() {
+    Route::post('/ambil', [AntrianController::class, 'ambil'])->name('antrian.ambil');
+    Route::put('/panggil/{no_antrian}', [AntrianController::class, 'panggilAntrian']);
+    Route::put('/selesai/{no_antrian}', [AntrianController::class, 'selesaiAntrian']);
 });
