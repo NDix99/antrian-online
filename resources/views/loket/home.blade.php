@@ -5,8 +5,11 @@
     <title>RSUD Caruban Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100">  
     <div class="bg-green-700 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div>
@@ -84,5 +87,38 @@
             </div>
         </div>
     </div>
+    <div class="mt-8 bg-white p-4 rounded shadow">
+        <h2 class="text-xl font-bold mb-4">Tabel Data Antrian</h2>
+        <table id="queueTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>No. Antrian</th>
+                    <th>No. RM</th>
+                    <th>Nama Pasien</th>
+                    <th>Tanggal Kunjungan</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#DataTables').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('antrian.data') }}",
+                columns: [
+                    // Sesuaikan 'data' dengan nama kolom di database Anda
+                    {data: 'nomor_antrian', name: 'nomor_antrian'},
+                    {data: 'no_rm', name: 'no_rm'},
+                    {data: 'nama_pasien', name: 'nama_pasien'},
+                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan'}
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                }
+            });
+        });
+    </script>
 </body>
 </html>

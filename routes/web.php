@@ -17,6 +17,7 @@ Route::post('/cek-rm', [PatientController::class, 'checkRM'])->name('cekrm.check
 Route::post('/cek-rm/check', [PatientController::class, 'checkRM'])->name('check.rm');
 Route::get('antrian/{noantrian}', [PatientController::class, 'showAntrian'])->name('patient.antrian');
 Route::post('/antrians', [AntrianController::class, 'store'])->name('antrian.store');
+Route::get('/antrian/data', [AntrianController::class, 'getData'])->name('antrian.data');
 
 
 Route::get('/', function () {
