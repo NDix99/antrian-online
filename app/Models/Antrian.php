@@ -11,6 +11,7 @@ class Antrian extends Model
     protected $fillable = [
         'no_rm',
         'no_antrian',
+        'nama',
         'status',
         'tanggal_kunjungan',
         'created_at',

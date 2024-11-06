@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('no_antrian');                                         // Auto-increment primary key
         //  $table->string('nik')->nullable()->default(null);
             $table->string('no_rm', 10);                                                
+            $table->string('nama')->nullable();
             $table->date('tanggal_kunjungan')->default(now());                          
             $table->enum('status', ['menunggu', 'dipanggil', 'selesai'])->default('menunggu');
        //   $table->unsignedBigInteger('loket_id');                                     

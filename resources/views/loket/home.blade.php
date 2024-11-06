@@ -2,6 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>RSUD Caruban Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -63,22 +64,106 @@
                     <h2 class="text-lg font-semibold">Jumlah Antrian</h2>
                     <i class="fas fa-users text-xl"></i>
                 </div>
-                <p class="text-4xl font-bold mt-2">346</p>
+                <p class="text-4xl font-bold mt-2" id="totalAntrian">0</p>
             </div>
+            <script>
+                function updateTotalAntrian() {
+                    fetch('{{ route("antrian.total") }}')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data && typeof data.total !== 'undefined') {
+                                document.getElementById('totalAntrian').textContent = data.total;
+                            } else {
+                                console.error('Invalid data format received');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching total:', error);
+                        });
+                }
+
+                // Panggil fungsi saat halaman dimuat
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateTotalAntrian();
+                    // Update setiap 5 detik
+                    setInterval(updateTotalAntrian, 10000);
+                });
+            </script>
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Sisa Antrian</h2>
                     <i class="fas fa-hourglass-half text-xl"></i>
                 </div>
-                <p class="text-4xl font-bold mt-2">346</p>
+                <p class="text-4xl font-bold mt-2" id="sisaAntrian">0</p>
             </div>
+            <script>
+                function updateSisaAntrian() {
+                    fetch('/antrian/sisa')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data && typeof data.sisa !== 'undefined') {
+                                document.getElementById('sisaAntrian').textContent = data.sisa;
+                            } else {
+                                console.error('Invalid data format received');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching sisa antrian:', error);
+                        });
+                }
+
+                // Update sisa antrian saat halaman dimuat
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateSisaAntrian();
+                    // Update setiap 10 detik
+                    setInterval(updateSisaAntrian, 10000);
+                });
+            </script>
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Antrian Selesai</h2>
                     <i class="fas fa-calendar-check text-xl"></i>
                 </div>
-                <p class="text-4xl font-bold mt-2">0</p>
+                <p class="text-4xl font-bold mt-2" id="antrianSelesai">0</p>
             </div>
+            <script>
+                function updateAntrianSelesai() {
+                    fetch('/antrian/selesai-count')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data && typeof data.total !== 'undefined') {
+                                document.getElementById('antrianSelesai').textContent = data.total;
+                            } else {
+                                console.error('Invalid data format received');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching antrian selesai:', error);
+                        });
+                }
+
+                // Update antrian selesai saat halaman dimuat
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateAntrianSelesai();
+                    // Update setiap 10 detik
+                    setInterval(updateAntrianSelesai, 10000);
+                });
+            </script>
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Antrian Loket</h2>
@@ -104,26 +189,47 @@
     </div>
 
     <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
         $(document).ready(function() {
-            $('#queueTable').DataTable({
+            let table = $('#queueTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('antrian.data') }}",
+                ajax: {
+                    url: "{{ route('antrian.data') }}",
+                    error: function (xhr, error, thrown) {
+                        console.log('Ajax error:', error);
+                    }
+                },
                 columns: [
-                    {data: 'nomor_antrian', name: 'nomor_antrian'},
+                    {data: 'no_antrian', name: 'no_antrian'},
                     {data: 'no_rm', name: 'no_rm'},
-                    {data: 'nama_pasien', name: 'nama_pasien'},
-                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan', 
+                    {data: 'nama', name: 'nama'},
+                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan',
                         render: function(data) {
                             return moment(data).format('DD MMMM YYYY HH:mm:ss');
                         }
                     }
                 ],
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
                 },
-                order: [[0, 'desc']]
+                order: [[0, 'desc']],
+                // Perbaikan filter tanggal
+                initComplete: function() {
+                    var today = moment().format('YYYY-MM-DD');
+                    this.api().column(3).search(today).draw();
+                }
             });
+
+            // Refresh data table setiap 5 detik
+            setInterval(function() {
+                table.ajax.reload(null, false);
+            }, 10000);
         });
     </script>
 </body>

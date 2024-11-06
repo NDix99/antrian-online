@@ -71,3 +71,6 @@ Route::group(['prefix' => 'antrian'], function() {
     Route::put('/panggil/{no_antrian}', [AntrianController::class, 'panggilAntrian']);
     Route::put('/selesai/{no_antrian}', [AntrianController::class, 'selesaiAntrian']);
 });
+
+// Tambahkan rute untuk mendapatkan total antrian
+Route::get('/antrian/total', [AntrianController::class, 'getTotal'])->name('antrian.total');
