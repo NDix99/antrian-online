@@ -201,32 +201,28 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ route('antrian.data') }}",
+                    type: 'GET',
                     error: function (xhr, error, thrown) {
-                        console.log('Ajax error:', error);
+                        console.error('Error:', error);
                     }
                 },
                 columns: [
                     {data: 'no_antrian', name: 'no_antrian'},
                     {data: 'no_rm', name: 'no_rm'},
                     {data: 'nama', name: 'nama'},
-                    {data: 'tanggal_kunjungan', name: 'tanggal_kunjungan',
+                    {
+                        data: 'tanggal_kunjungan',
+                        name: 'tanggal_kunjungan',
                         render: function(data) {
-                            return moment(data).format('DD MMMM YYYY HH:mm:ss');
+                            return moment(data).format('YYYY-MM-DD HH:mm:ss');
                         }
                     }
                 ],
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/id.json'
-                },
                 order: [[0, 'desc']],
-                // Perbaikan filter tanggal
-                initComplete: function() {
-                    var today = moment().format('YYYY-MM-DD');
-                    this.api().column(3).search(today).draw();
-                }
+                pageLength: 10
             });
 
-            // Refresh data table setiap 5 detik
+            // Refresh setiap 10 detik
             setInterval(function() {
                 table.ajax.reload(null, false);
             }, 10000);

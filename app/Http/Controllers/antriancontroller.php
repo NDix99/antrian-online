@@ -28,6 +28,15 @@ class AntrianController extends Controller
                 'tanggal_kunjungan' => 'required|date'
             ]);
 
+            // Cek apakah no_rm terdaftar di database patient
+            $patient = Patient::where('no_rm', $request->no_rm)->first();
+            if (!$patient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nomor RM tidak terdaftar dalam database silahkan melakukan registrasi terlebih dahulu di Rumah Sakit'
+                ]);
+            }
+
             // Cek apakah pasien sudah mengambil antrian di tanggal yang sama
             $existingAntrian = Antrian::where('no_rm', $request->no_rm)
                                     ->where('tanggal_kunjungan', $request->tanggal_kunjungan)
@@ -55,14 +64,11 @@ class AntrianController extends Controller
             // Format: 001, 002, dst
             $noAntrian = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT);
 
-            // Ambil data pasien berdasarkan no_rm
-            $patient = Patient::where('no_rm', $request->no_rm)->first();
-            
-            // Buat antrian baru dengan mengambil nama dari data pasien
+            // Buat antrian baru dengan nama dari data pasien
             $antrian = Antrian::create([
                 'no_antrian' => $noAntrian,
                 'no_rm' => $request->no_rm,
-                'nama' => $patient ? $patient->nama : 'Unknown',
+                'nama' => $patient->nama,
                 'tanggal_kunjungan' => $request->tanggal_kunjungan,
                 'status' => 'menunggu'
             ]);
@@ -91,21 +97,17 @@ class AntrianController extends Controller
         }
     }
 
-    public function getData()
+    public function getData(Request $request)
     {
-        $data = Antrian::select(['no_antrian', 'no_rm', 'nama', 'tanggal_kunjungan'])
-            ->latest('tanggal_kunjungan')
-            ->when(request()->input('search.value'), function($query, $search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('no_antrian', 'like', "%{$search}%")
-                      ->orWhere('no_rm', 'like', "%{$search}%")
-                      ->orWhere('nama', 'like', "%{$search}%");
-                });
-            });
-        
-        return DataTables::of($data)
-            ->smart(true)
-            ->rawColumns(['action'])
+        $query = Antrian::select([
+            'no_antrian',
+            'no_rm',
+            'nama',
+            'tanggal_kunjungan'
+        ])->whereDate('tanggal_kunjungan', Carbon::today());
+
+        return DataTables::of($query)
+            ->addIndexColumn()
             ->make(true);
     }
 }
