@@ -64,7 +64,7 @@ Route::middleware([
         return view('loket.home');
     })->name('loket.home');
 });
-Route::get('/antrian/data', [AntrianController::class, 'getData'])->name('antrian.data');
+Route::get('/antrian/data', [PatientController::class, 'showAntrian'])->name('antrian.data');
 
 Route::group(['prefix' => 'antrian'], function() {
     Route::post('/ambil', [AntrianController::class, 'ambil'])->name('antrian.ambil');
@@ -74,3 +74,5 @@ Route::group(['prefix' => 'antrian'], function() {
 
 // Tambahkan rute untuk mendapatkan total antrian
 Route::get('/antrian/total', [AntrianController::class, 'getTotal'])->name('antrian.total');
+
+

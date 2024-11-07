@@ -99,12 +99,14 @@ class AntrianController extends Controller
 
     public function getData(Request $request)
     {
-        $query = Antrian::select([
-            'no_antrian',
-            'no_rm',
-            'nama',
-            'tanggal_kunjungan'
-        ])->whereDate('tanggal_kunjungan', Carbon::today());
+        $query = Antrian::query()
+            ->select([
+                'id',
+                'no_antrian',
+                'no_rm',
+                'nama',
+                'tanggal_kunjungan',
+            ]);
 
         return DataTables::of($query)
             ->addIndexColumn()

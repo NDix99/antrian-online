@@ -11,6 +11,11 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/id.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 </head>
 <body class="bg-gray-100">  
     <div class="bg-green-700 text-white p-4">
@@ -66,34 +71,7 @@
                 </div>
                 <p class="text-4xl font-bold mt-2" id="totalAntrian">0</p>
             </div>
-            <script>
-                function updateTotalAntrian() {
-                    fetch('{{ route("antrian.total") }}')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data && typeof data.total !== 'undefined') {
-                                document.getElementById('totalAntrian').textContent = data.total;
-                            } else {
-                                console.error('Invalid data format received');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching total:', error);
-                        });
-                }
-
-                // Panggil fungsi saat halaman dimuat
-                document.addEventListener('DOMContentLoaded', function() {
-                    updateTotalAntrian();
-                    // Update setiap 5 detik
-                    setInterval(updateTotalAntrian, 10000);
-                });
-            </script>
+            
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Sisa Antrian</h2>
@@ -101,34 +79,7 @@
                 </div>
                 <p class="text-4xl font-bold mt-2" id="sisaAntrian">0</p>
             </div>
-            <script>
-                function updateSisaAntrian() {
-                    fetch('/antrian/sisa')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data && typeof data.sisa !== 'undefined') {
-                                document.getElementById('sisaAntrian').textContent = data.sisa;
-                            } else {
-                                console.error('Invalid data format received');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching sisa antrian:', error);
-                        });
-                }
-
-                // Update sisa antrian saat halaman dimuat
-                document.addEventListener('DOMContentLoaded', function() {
-                    updateSisaAntrian();
-                    // Update setiap 10 detik
-                    setInterval(updateSisaAntrian, 10000);
-                });
-            </script>
+            
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Antrian Selesai</h2>
@@ -136,34 +87,7 @@
                 </div>
                 <p class="text-4xl font-bold mt-2" id="antrianSelesai">0</p>
             </div>
-            <script>
-                function updateAntrianSelesai() {
-                    fetch('/antrian/selesai-count')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data && typeof data.total !== 'undefined') {
-                                document.getElementById('antrianSelesai').textContent = data.total;
-                            } else {
-                                console.error('Invalid data format received');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching antrian selesai:', error);
-                        });
-                }
-
-                // Update antrian selesai saat halaman dimuat
-                document.addEventListener('DOMContentLoaded', function() {
-                    updateAntrianSelesai();
-                    // Update setiap 10 detik
-                    setInterval(updateAntrianSelesai, 10000);
-                });
-            </script>
+            
             <div class="bg-white p-4 rounded shadow border border-green-500">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Antrian Loket</h2>
@@ -174,18 +98,26 @@
             </div>
         </div>
     </div>
-    <div class="mt-8 bg-white p-4 rounded shadow">
-        <h2 class="text-xl font-bold mb-4">Tabel Data Antrian</h2>
-        <table id="queueTable" class="w-full">
-            <thead>
-                <tr>
-                    <th>No. Antrian</th>
-                    <th>No. RM</th>
-                    <th>Nama Pasien</th>
-                    <th>Tanggal Kunjungan</th>
-                </tr>
-            </thead>
-        </table>
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-table me-2"></i> Tabel Data Antrian
+                </h5>
+            </div>
+            <div class="card-body">
+                <table id="queueTable" class="table table-striped table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No. Antrian</th>
+                            <th>No. RM</th>
+                            <th>Nama Pasien</th>
+                            <th>Tanggal Kunjungan</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -196,37 +128,76 @@
         });
         
         $(document).ready(function() {
-            let table = $('#queueTable').DataTable({
+            $('#queueTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: {
-                    url: "{{ route('antrian.data') }}",
-                    type: 'GET',
-                    error: function (xhr, error, thrown) {
-                        console.error('Error:', error);
-                    }
-                },
+                ajax: "{{ route('antrian.data') }}",
                 columns: [
-                    {data: 'no_antrian', name: 'no_antrian'},
-                    {data: 'no_rm', name: 'no_rm'},
-                    {data: 'nama', name: 'nama'},
-                    {
+                    { 
+                        data: 'no_antrian',
+                        name: 'no_antrian',
+                        className: 'text-center'
+                    },
+                    { 
+                        data: 'no_rm',
+                        name: 'no_rm'
+                    },
+                    { 
+                        data: 'nama',
+                        name: 'nama'
+                    },
+                    { 
                         data: 'tanggal_kunjungan',
                         name: 'tanggal_kunjungan',
                         render: function(data) {
-                            return moment(data).format('YYYY-MM-DD HH:mm:ss');
+                            return moment(data).format('DD MMMM YYYY');
                         }
                     }
                 ],
-                order: [[0, 'desc']],
-                pageLength: 10
+                language: {
+                    processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>',
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(disaring dari _MAX_ data keseluruhan)",
+                    zeroRecords: "Tidak ada data yang cocok",
+                    emptyTable: "Tidak ada data tersedia",
+                    paginate: {
+                        first: '<i class="fas fa-angle-double-left"></i>',
+                        previous: '<i class="fas fa-angle-left"></i>',
+                        next: '<i class="fas fa-angle-right"></i>',
+                        last: '<i class="fas fa-angle-double-right"></i>'
+                    }
+                },
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                     "<'row'<'col-sm-12'tr>>" +
+                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                pageLength: 10,
+                order: [[0, 'asc']],
+                responsive: true
             });
-
-            // Refresh setiap 10 detik
-            setInterval(function() {
-                table.ajax.reload(null, false);
-            }, 10000);
         });
     </script>
+
+    <style>
+        /* Beberapa penyesuaian tambahan */
+        .dataTables_wrapper .dataTables_length select {
+            width: auto;
+            display: inline-block;
+        }
+        
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 0.5em;
+            display: inline-block;
+            width: auto;
+        }
+        
+        .dataTables_wrapper .dataTables_processing {
+            background: rgba(255,255,255,0.9);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
 </body>
 </html>
