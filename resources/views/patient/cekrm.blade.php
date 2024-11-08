@@ -102,24 +102,35 @@
     function checkRM(event) {
         event.preventDefault();
         
+        const nik = $('#nik').val();
+        
+        // Validate NIK
+        if (nik.length !== 16 || !/^\d+$/.test(nik)) {
+            $('#rmResult').html('NIK harus 16 digit angka');
+            $('#result').show();
+            return;
+        }
+        
         $.ajax({
             url: '{{ route("check.rm") }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
-                nik: $('#nik').val()
+                nik: nik
             },
             success: function(response) {
                 if(response.success) {
-                    $('#rmResult').html(`NIK: ${response.patient.nik}<br>Nama: ${response.patient.nama}<br>Nomor RM: ${response.patient.no_rm}`);
-                    $('#result').show();
+                    $('#rmResult').html(`Nama: ${response.patient.nama}<br>Nomor RM: ${response.patient.no_rm}`);
+                    $('#result').removeClass('alert-danger').addClass('alert-success');
                 } else {
                     $('#rmResult').html(response.message);
-                    $('#result').show();
+                    $('#result').removeClass('alert-success').addClass('alert-danger');
                 }
+                $('#result').show();
             },
             error: function() {
                 $('#rmResult').html('Terjadi kesalahan. Silakan coba lagi.');
+                $('#result').removeClass('alert-success').addClass('alert-danger');
                 $('#result').show();
             }
         });

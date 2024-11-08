@@ -28,26 +28,24 @@ class PatientController extends Controller
      */
     public function checkRM(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->validate([
-            'nik' => 'required|string|size:16'
-        ]);
-
-        $patient = Patient::where('nik', $request->nik)->first();
-
+        $nik = $request->input('nik');
+        
+        $patient = Patient::where('nik', $nik)->first();
+        
         if ($patient) {
             return response()->json([
                 'success' => true,
                 'patient' => [
                     'nik' => $patient->nik,
-                    'name' => $patient->name,
+                    'nama' => $patient->nama,
                     'no_rm' => $patient->no_rm
                 ]
             ]);
         }
-
+        
         return response()->json([
             'success' => false,
-            'message' => 'Data pasien tidak ditemukan'
+            'message' => 'Data pasien tidak ditemukan. Silakan periksa kembali NIK anda atau lakukan pendaftaran di tempat.'
         ]);
     }
 
